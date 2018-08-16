@@ -45,7 +45,7 @@ app.get('/api/getBook', (req, res) => {
 });
 
 app.get('/api/books', (req, res) => {
-  // localhost:3001/api/books?skip=3&limit=2&order=asc
+  // locahost:3001/api/books?skip=3&limit=2&order=asc
   let skip = parseInt(req.query.skip);
   let limit = parseInt(req.query.limit);
   let order = req.query.order;
@@ -61,7 +61,7 @@ app.get('/api/books', (req, res) => {
     });
 });
 
-app.get('/api/getReviews', (req, res) => {
+app.get('/api/getReviewer', (req, res) => {
   let id = req.query.id;
 
   User.findById(id, (err, doc) => {
@@ -105,7 +105,10 @@ app.post('/api/register', (req, res) => {
 
   user.save((err, doc) => {
     if (err) return res.json({ success: false });
-    res.status(200).json({ success: true, user: doc });
+    res.status(200).json({
+      success: true,
+      user: doc
+    });
   });
 });
 
@@ -114,18 +117,19 @@ app.post('/api/login', (req, res) => {
     if (!user)
       return res.json({
         isAuth: false,
-        message: 'Auth failed, emial not Found'
+        message: 'Auth failed, email not found'
       });
+
     user.comparePassword(req.body.password, (err, isMatch) => {
       if (!isMatch)
         return res.json({
           isAuth: false,
           message: 'Wrong password'
         });
+
       user.generateToken((err, user) => {
         if (err) return res.status(400).send(err);
-
-        res.cookie('auth', user.token).send({
+        res.cookie('auth', user.token).json({
           isAuth: true,
           id: user._id,
           email: user.email
@@ -147,6 +151,7 @@ app.post('/api/book_update', (req, res) => {
 });
 
 // DELETE //
+
 app.delete('/api/delete_book', (req, res) => {
   let id = req.query.id;
 
@@ -158,12 +163,12 @@ app.delete('/api/delete_book', (req, res) => {
 
 if (process.env.NODE_ENV === 'production') {
   const path = require('path');
-  app.get('/*', () => {
+  app.get('/*', (req, res) => {
     res.sendfile(path.resolve(__dirname, '../client', 'build', 'index.html'));
   });
 }
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
-  console.log(`Server runing`);
+  console.log(`SERVER RUNNNING`);
 });
